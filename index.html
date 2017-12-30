@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pong</title>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
+    <script language="javascript" type="text/javascript" src="computer.js"></script>
+    <script language="javascript" type="text/javascript" src="paddle.js"></script>
+    <script language="javascript" type="text/javascript" src="ball.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    // creating the canvas
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    // making the canvas the width and height of the screen
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // the frame rate of the game
+    var fr = 1000/30;
+
+    // whether or not the up/down arrow keys have been pressed
+    var upPressed = false;
+    var downPressed = false;
+
+    // listening for keyboard events
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+
+    // instantiating game objects
+    var player = new Paddle();
+    var computer = new Computer();
+    var ball = new Ball();
+
+    // player variables
+    var score = 0;  // the player scores if the computer is not able to hit the ball
+    var lives = 3;
+
+    // how much the "score" and "lives" text will be offset from top right of screen
+    var labelOffset = 50;
+
+
+    // draws everything to the canvas while the player has lives left
+    function draw() {
+        if(lives > 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            player.draw();
+            player.move();
+            computer.move();
+            ball.draw();
+            ball.move();
+            computer.draw();
+            drawScoreAndLives();
+        }
+        if(lives === 0) gameOver();
+    }
+
+    // listens for the release of the up and down arrow keys
+    function keyUpHandler(e) {
+        // if left arrow key is pressed
+        if(e.keyCode === 38) {
+            upPressed = false;
+        }   // if right arrow key is pressed
+        else if(e.keyCode === 40) {
+            downPressed = false;
+        }
+
+    }
+
+    // listens for the press of the up and down arrow keys
+    function keyDownHandler(e) {
+        // if up arrow key is pressed
+        if(e.keyCode === 38) {
+            upPressed = true;
+        }   // if down arrow key is pressed
+        else if(e.keyCode === 40) {
+            downPressed = true;
+        }
+    }
+
+    // draws to the canvas the score and lives of the player
+    function drawScoreAndLives() {
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText("Lives " + lives, canvas.width - labelOffset, labelOffset);
+        ctx.fillText("Score " + score, canvas.width - labelOffset, labelOffset * 2);
+    }
+
+    // resets the game by putting the ball in the middle of the canvas, and randomly changing the ball direction
+    function gameReset() {
+        ball.x = canvas.width/2;
+        ball.y = canvas.height/2;
+        // if the random number is greater than .5, the starting direction of the ball is reversed
+        //ball.dx = ball.dx * (Math.random() > .5 ) ? -1 : 1;
+       // ball.dy = ball.dy * (Math.random() > .5 ) ? -1 : 1;
+    }
+
+    function gameOver() {
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText("Game over", canvas.width / 2 + 75, canvas.height /2);
+    }
+
+
+    setInterval(draw, fr);
+
+
+</script>
+</body>
+</html>
